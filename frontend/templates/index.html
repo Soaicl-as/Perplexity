@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram DM Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Instagram DM Bot</h1>
+        </header>
+        
+        <main>
+            <!-- Login Form -->
+            <section id="login-section" class="form-section">
+                <h2>Login to Instagram</h2>
+                <form id="login-form" class="form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div id="login-message" class="message"></div>
+                
+                <!-- Verification Section (Hidden by default) -->
+                <div id="verification-section" class="verification-section hidden">
+                    <h3>Security Verification Required</h3>
+                    <p>Instagram has flagged this login attempt for security verification.</p>
+                    <ol>
+                        <li>Open Instagram in your browser</li>
+                        <li>Login and verify the attempt</li>
+                        <li>Once verified, click the button below to continue</li>
+                    </ol>
+                    <button id="verification-complete-btn" class="btn btn-primary">Verification Complete</button>
+                </div>
+            </section>
+            
+            <!-- Main Bot UI (Hidden by default) -->
+            <section id="bot-section" class="form-section hidden">
+                <div class="user-info">
+                    <p>Logged in as: <span id="logged-username"></span></p>
+                    <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                </div>
+                
+                <!-- Extract Users Form -->
+                <div class="card">
+                    <h2>Step 1: Extract Instagram Users</h2>
+                    <form id="extract-form" class="form">
+                        <div class="form-group">
+                            <label for="target-username">Target Instagram Username</label>
+                            <input type="text" id="target-username" name="target-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Extract:</label>
+                            <div class="radio-group">
+                                <input type="radio" id="extract-followers" name="extract-type" value="followers" checked>
+                                <label for="extract-followers">Followers</label>
+                                
+                                <input type="radio" id="extract-following" name="extract-type" value="following">
+                                <label for="extract-following">Following</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-count">Maximum Number of Users to Extract</label>
+                            <input type="number" id="max-count" name="max-count" min="1" max="1000" value="100">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Extract Users</button>
+                    </form>
+                    <div id="extract-message" class="message"></div>
+                </div>
+                
+                <!-- Send DM Form -->
+                <div class="card">
+                    <h2>Step 2: Send Messages</h2>
+                    <form id="dm-form" class="form">
+                        <div class="form-group">
+                            <label for="message">Message to Send</label>
+                            <textarea id="message" name="message" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-dms">Number of DMs to Send</label>
+                            <input type="number" id="max-dms" name="max-dms" min="1" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="min-delay">Minimum Delay Between Messages (seconds)</label>
+                            <input type="number" id="min-delay" name="min-delay" min="10" value="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="max-delay">Maximum Delay Between Messages (seconds)</label>
+                            <input type="number" id="max-delay" name="max-delay" min="10" value="60">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Start Sending Messages</button>
+                    </form>
+                    <div id="dm-message" class="message"></div>
+                </div>
+                
+                <!-- Progress Section -->
+                <div class="card" id="progress-section" style="display: none;">
+                    <h2>Progress</h2>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" id="progress-bar"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progress-text">0/0</span>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-label">Successful:</span>
+                            <span class="stat-value" id="successful-count">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Failed:</span>
+                            <span class="stat-value" id="failed-count">0</span>
+                        </div>
+                    </div>
+                    <div class="log-container">
+                        <h3>Activity Log</h3>
+                        <div id="activity-log" class="log"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Extracted Users Modal -->
+    <div id="users-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Extracted Users</h2>
+            <div class="users-list-container">
+                <div id="users-list" class="users-list"></div>
+            </div>
+            <div class="modal-actions">
+                <button id="select-all-btn" class="btn btn-secondary">Select All</button>
+                <button id="use-selected-btn" class="btn btn-primary">Use Selected</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
